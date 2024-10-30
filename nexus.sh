@@ -84,21 +84,48 @@ install_dependency() {
 nexus_setup() {
     echo "<===== Installing Nexus Prover =====>"
 
-    # Download and execute Nexus CLI installer script
-    echo "Downloading and installing Nexus CLI..."
-    if echo "Y" | curl -s https://cli.nexus.xyz/install.sh | sh; then
-        echo "Nexus Prover installed successfully."
+    # Ensure Rust and Cargo are installed
+    if ! command -v rustc &> /dev/null; then
+        echo "Rust is not installed. Installing Rust..."
+        curl -sSf https://sh.rustup.rs | sh -s -- -y
+        source $HOME/.cargo/env
+    fi
+
+    NEXUS_HOME=$HOME/.nexus
+
+    # Set non-interactive mode for Nexus Terms of Use agreement
+    echo "Y" | NONINTERACTIVE=1
+
+    # Check for git installation
+    if ! command -v git &> /dev/null; then
+        echo "Git is not installed. Please install Git and try again."
+        exit 1
+    fi
+
+    # Clone or update Nexus network API repository
+    if [ -d "$NEXUS_HOME/network-api" ]; then
+        echo "$NEXUS_HOME/network-api exists. Updating..."
+        (cd $NEXUS_HOME/network-api && git pull)
     else
-        echo "Failed to install Nexus Prover. Retrying with debug mode."
-        
-        # Retry with backtrace in case of a request issue
-        if RUST_BACKTRACE=1 curl -s https://cli.nexus.xyz/install.sh | sh; then
-            echo "Nexus Prover installed successfully on retry."
+        mkdir -p $NEXUS_HOME
+        (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
+    fi
+
+    # Check if the Nexus prover binary already exists
+    if [ -f "$NEXUS_HOME/network-api/clients/cli/target/release/prover" ]; then
+        echo "Nexus Prover is already installed."
+    else
+        echo "Running Nexus Prover installation..."
+
+        # Run the Nexus prover using cargo, with error handling
+        if (cd $NEXUS_HOME/network-api/clients/cli && cargo run --release --bin prover -- beta.orchestrator.nexus.xyz); then
+            echo "Nexus Prover installed and executed successfully."
         else
-            echo "Failed to install Nexus Prover after retry. Please check network or URL."
+            echo "Failed to run Nexus Prover. Please check for errors in the installation process."
             exit 1
         fi
-    fi
+     fi
+
 
     # Set ownership for Nexus files
     echo "Setting file ownership for Nexus..."
@@ -140,21 +167,19 @@ EOF
 
     echo "Nexus Prover service setup and started successfully!"
 
-    # Function to update Nexus Network API to the latest version
-    echo "Starting Nexus Network API update. Please wait..."
-    sleep 3
+    # Update Nexus Network API to latest version
+    echo "Updating Nexus Network API..."
     update_nexus_api
 
-    # Setting up Nexus ZKVM environment
-    echo "Setting up Nexus ZKVM environment. Please wait..."
-    sleep 3
+    # Set up Nexus ZKVM environment
+    echo "Setting up Nexus ZKVM environment..."
     setup_nexus_zkvm
 
-    # Going to Menu
-    echo "Navigating to main menu. Please wait..."
-    sleep 3
+    # Go back to main menu
+    echo "Navigating to main menu..."
     master
 }
+
 
 
 
