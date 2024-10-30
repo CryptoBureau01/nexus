@@ -89,11 +89,17 @@ nexus_setup() {
     mkdir -p /root/nexus
     cd /root/nexus
 
-    # Download and execute Nexus CLI installer script
-    if sudo curl -s https://cli.nexus.xyz/install.sh | sh; then
-        echo "Nexus Prover installed successfully."
+    # Download and execute Nexus CLI installer script with error handling
+    echo "Downloading and installing Nexus CLI..."
+    if sudo curl -sSL https://cli.nexus.xyz/install.sh -o install.sh; then
+        if sudo bash install.sh; then
+            echo "Nexus Prover installed successfully."
+        else
+            echo "Error: Nexus Prover installation failed during script execution."
+            exit 1
+        fi
     else
-        echo "Failed to install Nexus Prover. Please check the URL or your network connection."
+        echo "Error: Failed to download the Nexus installer script. Check your network connection."
         exit 1
     fi
 
@@ -151,8 +157,8 @@ EOF
     echo "Navigating to main menu. Please wait..."
     sleep 3
     master
-
 }
+
 
 
 
