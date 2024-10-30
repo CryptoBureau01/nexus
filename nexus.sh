@@ -348,19 +348,14 @@ master() {
     print_info "3. Node-Run"
     print_info "4. Logs-Checker"
     print_info "5. Refresh-Node"
-    print_info "6. Stop-Node"
-    print_info "7. Start-Node"
-    print_info "8. Contract-Deploy"
-    print_info "9. Op-Node-Logs"
-    print_info "10. Client-Node-Logs"
-    print_info "11. Exit"
+    print_info "6. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CryptoBuroMaster "
     print_info "==============================="
     print_info ""
     
-    read -p "Enter your choice (1 or 11): " user_choice
+    read -p "Enter your choice (1 or 6): " user_choice
 
     case $user_choice in
         1)
@@ -379,21 +374,6 @@ master() {
             restart_nexus_node
             ;;
         6)
-            uni_stop
-            ;;
-        7) 
-            uni_start
-            ;;
-        8) 
-            contract
-            ;;
-        9) 
-            logs
-            ;;
-        10)
-            client_node_logs
-            ;;
-        11)
             exit 0  # Exit the script after breaking the loop
             ;;
         *)
