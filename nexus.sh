@@ -82,25 +82,22 @@ install_dependency() {
 
 
 nexus_setup() {
-
     echo "<===== Installing Nexus Prover =====>"
 
-    # Create Nexus directory and navigate into it
-    mkdir -p /root/nexus
-    cd /root/nexus
-
-    # Download and execute Nexus CLI installer script with error handling
+    # Download and execute Nexus CLI installer script
     echo "Downloading and installing Nexus CLI..."
-    if sudo curl -sSL https://cli.nexus.xyz/install.sh -o install.sh; then
-        if sudo bash install.sh; then
-            echo "Nexus Prover installed successfully."
+    if echo "Y" | curl -s https://cli.nexus.xyz/install.sh | sh; then
+        echo "Nexus Prover installed successfully."
+    else
+        echo "Failed to install Nexus Prover. Retrying with debug mode."
+        
+        # Retry with backtrace in case of a request issue
+        if RUST_BACKTRACE=1 curl -s https://cli.nexus.xyz/install.sh | sh; then
+            echo "Nexus Prover installed successfully on retry."
         else
-            echo "Error: Nexus Prover installation failed during script execution."
+            echo "Failed to install Nexus Prover after retry. Please check network or URL."
             exit 1
         fi
-    else
-        echo "Error: Failed to download the Nexus installer script. Check your network connection."
-        exit 1
     fi
 
     # Set ownership for Nexus files
@@ -158,6 +155,7 @@ EOF
     sleep 3
     master
 }
+
 
 
 
