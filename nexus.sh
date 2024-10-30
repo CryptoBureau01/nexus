@@ -351,7 +351,7 @@ master() {
     print_info "6. Exit"
     print_info ""
     print_info "==============================="
-    print_info " Created By : CryptoBuroMaster "
+    print_info " Created By : CB-Master "
     print_info "==============================="
     print_info ""
     
