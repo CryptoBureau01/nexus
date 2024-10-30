@@ -46,7 +46,7 @@ master_fun() {
     fi
 
     echo "System check passed. Proceeding to package installation..."
-    main_fun  # Call main function if all checks pass
+    
 }
 
 
