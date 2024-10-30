@@ -304,6 +304,39 @@ logs() {
 
 
 
+# Function to restart the Nexus node
+restart_nexus_node() {
+    echo "Restarting Nexus node..."
+
+    # Stop the Nexus service
+    if systemctl is-active --quiet nexus.service; then
+        echo "Stopping Nexus service..."
+        sudo systemctl stop nexus.service
+    else
+        echo "Nexus service is not running."
+    fi
+
+    # Wait a few seconds to ensure service stops completely
+    sleep 3
+
+    # Start the Nexus service again
+    echo "Starting Nexus service..."
+    sudo systemctl start nexus.service
+
+    # Verify the Nexus service is running
+    if systemctl is-active --quiet nexus.service; then
+        echo "Nexus node restarted successfully!"
+    else
+        echo "Failed to restart Nexus node. Checking logs for details..."
+        sudo journalctl -u nexus.service -n 50 --no-pager
+    fi
+}
+
+
+
+
+
+
 # Function to display menu and prompt user for input
 master() {
     print_info "==============================="
@@ -314,7 +347,7 @@ master() {
     print_info "2. Setup-Nexus"
     print_info "3. Node-Run"
     print_info "4. Logs-Checker"
-    print_info "5. Private-Key Restore"
+    print_info "5. Refresh-Node"
     print_info "6. Stop-Node"
     print_info "7. Start-Node"
     print_info "8. Contract-Deploy"
@@ -343,7 +376,7 @@ master() {
             logs
             ;;
         5)  
-            restore_priv_key
+            restart_nexus_node
             ;;
         6)
             uni_stop
