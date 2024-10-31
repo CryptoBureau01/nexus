@@ -92,7 +92,7 @@ nexus_setup() {
         source $HOME/.cargo/env
     fi
 
-    NEXUS_HOME=$HOME/.nexus
+    NEXUS_HOME=/root/.nexus
 
     # Check for git installation
     if ! command -v git &> /dev/null; then
