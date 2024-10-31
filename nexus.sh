@@ -276,7 +276,7 @@ setup_nexus_zkvm() {
 
     # Return to the project root directory
     cd .. || { echo "Failed to return to project root directory."; return 1; }
-    echo "Nexus ZKVM environment setup completed successfully."
+    echo "Nexus-API ZKVM environment setup completed successfully."
 }
 
 
