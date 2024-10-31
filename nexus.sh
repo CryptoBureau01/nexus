@@ -285,7 +285,7 @@ setup_nexus_zkvm() {
 
 
 
-manage_nexus_environment() {
+nexus_run() {
     echo "Starting Nexus program, proof, and verification sequence..."
 
     # Run the Nexus program
@@ -311,7 +311,7 @@ manage_nexus_environment() {
     sudo rm -f /etc/systemd/system/nexus.service
     sudo systemctl daemon-reload
 
-    echo "Nexus environment managed successfully."
+    echo "Nexus environment Run successfully."
 
     #Go to Menu
     master
@@ -384,7 +384,7 @@ master() {
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
     print_info "3. Nexus-API"
-    print_info "4. Node-Run"
+    print_info "4. Nexus-Run"
     print_info "5. Service-Check"
     print_info "6. Logs-Checker"
     print_info "7. Refresh-Node"
@@ -408,7 +408,7 @@ master() {
             nexus_api
             ;;
         4)
-            manage_nexus_environment
+            nexus_run
             ;;
         5) 
             check_service_status
