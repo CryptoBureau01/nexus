@@ -101,7 +101,7 @@ nexus_setup() {
 
     # Clone or update Nexus network API repository
     if [ -d "$NEXUS_HOME/network-api" ]; then
-        echo "$NEXUS_HOME/network-api exists. Updating..."
+        echo "$NEXUS_HOME/network-api already exists. Updating..."
         (cd $NEXUS_HOME/network-api && git pull)
     else
         mkdir -p $NEXUS_HOME
@@ -388,6 +388,26 @@ restart_nexus_node() {
 
 
 
+# Function to check and display the Prover ID
+check_prover_id() {
+    PROVER_ID_FILE="$HOME/.nexus/prover-id"
+
+    # Check if the prover-id file exists
+    if [ ! -f "$PROVER_ID_FILE" ]; then
+        echo "Error: Prover-ID file not found at $PROVER_ID_FILE."
+        return 1
+    fi
+
+    # Read the Prover ID from the file
+    PROVER_ID=$(cat "$PROVER_ID_FILE")
+
+    # Print the Prover ID
+    echo "Your Prover-ID: $PROVER_ID"
+
+    # Go back to main menu
+    echo "Navigating to main menu..."
+    master
+}
 
 
 
@@ -398,21 +418,22 @@ master() {
     print_info "==============================="
     print_info ""
     print_info "1. Install-Dependency"
-    print_info "2. Setup-Nexus"
-    print_info "3. Nexus-API"
-    print_info "4. Nexus-ZKVM"
-    print_info "5. Nexus-Run"
+    print_info "2. Nexus-Service-Setup"
+    print_info "3. Nexus-API-Setup"
+    print_info "4. Nexus-ZKVM-Setup"
+    print_info "5. Nexus-Node-Run"
     print_info "6. Service-Check"
     print_info "7. Logs-Checker"
     print_info "8. Refresh-Node"
-    print_info "9. Exit"
+    print_info "9. Prover-ID-Checker"
+    print_info "10. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CB-Master "
     print_info "==============================="
     print_info ""
     
-    read -p "Enter your choice (1 or 9): " user_choice
+    read -p "Enter your choice (1 or 10): " user_choice
 
     case $user_choice in
         1)
@@ -440,10 +461,13 @@ master() {
             restart_nexus_node
             ;;
         9)
+            check_prover_id
+            ;;
+       10)
             exit 0  # Exit the script after breaking the loop
             ;;
         *)
-            print_error "Invalid choice. Please enter 1 or 9 : "
+            print_error "Invalid choice. Please enter 1 or 10 : "
             ;;
     esac
 }
