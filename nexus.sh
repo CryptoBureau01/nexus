@@ -232,7 +232,7 @@ setup_nexus_zkvm() {
     fi
 
     # Install Nexus tools from the Nexus repository
-    if cargo install --git https://github.com/nexus-xyz/nexus-zkvm nexus-tools --tag 'v1.0.0'; then
+    if cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.2.3'; then
         echo "Nexus tools installed successfully."
     else
         echo "Failed to install Nexus tools. Please check your network connection or repository URL."
@@ -290,15 +290,15 @@ nexus_run() {
 
     # Run the Nexus program
     echo "Running Nexus program..."
-    cargo-nexus run || { echo "Failed to run Nexus program."; return 1; }
+    cargo nexus run || { echo "Failed to run Nexus program."; return 1; }
 
     # Prove the Nexus program
     echo "Proving your program..."
-    cargo-nexus prove || { echo "Failed to prove Nexus program."; return 1; }
+    cargo nexus prove || { echo "Failed to prove Nexus program."; return 1; }
 
     # Verify the proof
     echo "Verifying your proof..."
-    cargo-nexus verify || { echo "Failed to verify Nexus proof."; return 1; }
+    cargo nexus verify || { echo "Failed to verify Nexus proof."; return 1; }
 
     # Fix unused import warning
     echo "Fixing unused import warnings..."
