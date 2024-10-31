@@ -381,7 +381,7 @@ master() {
     print_info ""
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
-    print-info "3. Update-API"
+    print_info "3. Update-API"
     print_info "4. Node-Run"
     print_info "5. Service-Check"
     print_info "6. Logs-Checker"
