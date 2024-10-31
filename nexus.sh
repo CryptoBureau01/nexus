@@ -328,10 +328,13 @@ logs() {
 
     # Re-check service status after attempting to start
     if systemctl is-active --quiet nexus.service; then
-        echo "Nexus service started successfully."
+       echo "Nexus service started successfully."
+       # Show the last 100 lines of logs and continue to follow new logs
+       journalctl -u nexus.service -n 100 -f
     else
-        echo "Failed to start Nexus service. Checking logs..."
-        sudo journalctl -u nexus.service -n 50 --no-pager
+       echo "Failed to start Nexus service. Checking logs..."
+       # Show the last 100 lines of logs without pagination
+       sudo journalctl -u nexus.service -n 100 --no-pager
     fi
 
     #Go to Menu
