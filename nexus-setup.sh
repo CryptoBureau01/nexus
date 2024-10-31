@@ -108,7 +108,7 @@ nexus_setup() {
         mkdir -p $NEXUS_HOME
         (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
         # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
-        curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh"
+        curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh && sh "$NEXUS_HOME/nexus.sh""
     fi
 
 
