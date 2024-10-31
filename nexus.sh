@@ -221,7 +221,10 @@ nexus_zkvm() {
     
     # Check if the Nexus ZKVM project already exists
     if [ -d "$PROJECT_DIR" ]; then
-        echo "Nexus ZKVM project already exists. Please remove the existing project or use the existing setup."
+        echo "Nexus ZKVM API already exists."
+        # Go back to main menu
+        echo "Navigating to main menu..."
+        master
         return 1
     fi
 
