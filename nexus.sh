@@ -93,9 +93,6 @@ nexus_setup() {
 
     NEXUS_HOME=$HOME/.nexus
 
-    # Set non-interactive mode for Nexus Terms of Use agreement
-    echo "Y" | NONINTERACTIVE=1
-
     # Check for git installation
     if ! command -v git &> /dev/null; then
         echo "Git is not installed. Please install Git and try again."
@@ -120,8 +117,6 @@ nexus_setup() {
     sed -i 's|cargo|/root/.cargo/bin/cargo|g' nexus.sh
 
     sed -i '5i NONINTERACTIVE=1' nexus.sh
-
-
 
     # Define systemd service file path
     SERVICE_FILE="/etc/systemd/system/nexus.service"
@@ -158,14 +153,6 @@ EOF
 
     echo "Nexus Prover service setup and started successfully!"
 
-    # Update Nexus Network API to latest version
-    echo "Updating Nexus Network API..."
-    update_nexus_api
-
-    # Set up Nexus ZKVM environment
-    echo "Setting up Nexus ZKVM environment..."
-    setup_nexus_zkvm
-
     # Go back to main menu
     echo "Navigating to main menu..."
     master
@@ -173,6 +160,17 @@ EOF
 
 
 
+check_service_status() {
+    echo "<===== Checking Nexus Service Status =====>"
+    sudo systemctl status nexus.service
+
+    # Check if the service is active
+    if systemctl is-active --quiet nexus.service; then
+        echo "Nexus service is running."
+    else
+        echo "Nexus service is not running."
+    fi
+}
 
 
 
@@ -207,6 +205,15 @@ update_nexus_api() {
     cargo build --release || { echo "Build failed. Please check the error logs."; return 1; }
 
     echo "Nexus Network API updated to the latest version ($LATEST_TAG)."
+
+    
+    # Set up Nexus ZKVM environment
+    echo "Setting up Nexus ZKVM environment..."
+    setup_nexus_zkvm
+
+    # Go back to main menu
+    echo "Navigating to main menu..."
+    master
 }
 
 
@@ -214,15 +221,15 @@ update_nexus_api() {
 setup_nexus_zkvm() {
     echo "Setting up Nexus ZKVM environment..."
 
-    # Add the target for RISC-V
+    # Add the target for RISC-V architecture
     if rustup target add riscv32i-unknown-none-elf; then
         echo "Target riscv32i-unknown-none-elf added successfully."
     else
-        echo "Failed to add target riscv32i-unknown-none-elf."
+        echo "Failed to add target riscv32i-unknown-none-elf. Please ensure Rust is installed correctly."
         return 1
     fi
 
-    # Install nexus-tools from the Nexus repository
+    # Install Nexus tools from the Nexus repository
     if cargo install --git https://github.com/nexus-xyz/nexus-zkvm nexus-tools --tag 'v1.0.0'; then
         echo "Nexus tools installed successfully."
     else
@@ -231,36 +238,45 @@ setup_nexus_zkvm() {
     fi
 
     # Create Nexus ZKVM project
-    cargo nexus new nexus-project || { echo "Failed to create Nexus ZKVM project."; return 1; }
+    if cargo nexus new nexus-project; then
+        echo "Nexus ZKVM project created successfully."
+    else
+        echo "Failed to create Nexus ZKVM project."
+        return 1
+    fi
+
+    # Navigate to the project src directory
     cd nexus-project/src || { echo "Failed to navigate to project src directory."; return 1; }
 
     # Remove the default main.rs if it exists
     rm -f main.rs
 
     # Write the sample program to main.rs
-    cat <<EOT > main.rs
-#![no_std]
-#![no_main]
+    {
+        echo '#![no_std]'
+        echo '#![no_main]'
+        echo ''
+        echo 'fn fib(n: u32) -> u32 {'
+        echo '    match n {'
+        echo '        0 => 0,'
+        echo '        1 => 1,'
+        echo '        _ => fib(n - 1) + fib(n - 2),'
+        echo '    }'
+        echo '}'
+        echo ''
+        echo '#[nexus_rt::main]'
+        echo 'fn main() {'
+        echo '    let n = 7;'
+        echo '    let result = fib(n);'
+        echo '    assert_eq!(result, 13);'
+        echo '}'
+    } > main.rs
 
-fn fib(n: u32) -> u32 {
-    match n {
-        0 => 0,
-        1 => 1,
-        _ => fib(n - 1) + fib(n - 2),
-    }
-}
-
-#[nexus_rt::main]
-fn main() {
-    let n = 7;
-    let result = fib(n);
-    assert_eq!(result, 13);
-}
-EOT
-
+    # Return to the project root directory
     cd .. || { echo "Failed to return to project root directory."; return 1; }
     echo "Nexus ZKVM environment setup completed successfully."
 }
+
 
 
 
@@ -366,16 +382,17 @@ master() {
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
     print_info "3. Node-Run"
-    print_info "4. Logs-Checker"
-    print_info "5. Refresh-Node"
-    print_info "6. Exit"
+    print_info "4. Service-Check"
+    print_info "5. Logs-Checker"
+    print_info "6. Refresh-Node"
+    print_info "7. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CB-Master "
     print_info "==============================="
     print_info ""
     
-    read -p "Enter your choice (1 or 6): " user_choice
+    read -p "Enter your choice (1 or 7): " user_choice
 
     case $user_choice in
         1)
@@ -388,16 +405,19 @@ master() {
             manage_nexus_environment
             ;;
         4) 
+            check_service_status
+            ;;
+        5)
             logs
             ;;
-        5)  
+        6)  
             restart_nexus_node
             ;;
-        6)
+        7)
             exit 0  # Exit the script after breaking the loop
             ;;
         *)
-            print_error "Invalid choice. Please enter 1 or 11 : "
+            print_error "Invalid choice. Please enter 1 or 7 : "
             ;;
     esac
 }
