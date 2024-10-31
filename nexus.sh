@@ -208,10 +208,6 @@ nexus_api() {
 
     echo "Nexus Network API updated to the latest version ($LATEST_TAG)."
 
-    # Set up Nexus ZKVM environment
-    echo "Setting up Nexus ZKVM environment..."
-    setup_nexus_zkvm
-
     # Go back to main menu
     echo "Navigating to main menu..."
     master
@@ -220,7 +216,7 @@ nexus_api() {
 
 
 
-setup_nexus_zkvm() {
+nexus_zkvm() {
     echo "Setting up Nexus ZKVM environment..."
 
     # Add the target for RISC-V architecture
@@ -276,7 +272,11 @@ setup_nexus_zkvm() {
 
     # Return to the project root directory
     cd .. || { echo "Failed to return to project root directory."; return 1; }
-    echo "Nexus-API ZKVM environment setup completed successfully."
+    echo "Nexus ZKVM environment setup completed successfully."
+
+    # Go back to main menu
+    echo "Navigating to main menu..."
+    master
 }
 
 
@@ -311,7 +311,7 @@ nexus_run() {
     sudo rm -f /etc/systemd/system/nexus.service
     sudo systemctl daemon-reload
 
-    echo "Nexus environment Run successfully."
+    echo "Nexus Run successfully."
 
     #Go to Menu
     master
@@ -330,11 +330,11 @@ logs() {
     if systemctl is-active --quiet nexus.service; then
        echo "Nexus service started successfully."
        # Show the last 100 lines of logs and continue to follow new logs
-       journalctl -u nexus.service -n 100 -f
+       journalctl -u nexus.service -n 50 -f
     else
        echo "Failed to start Nexus service. Checking logs..."
        # Show the last 100 lines of logs without pagination
-       sudo journalctl -u nexus.service -n 100 --no-pager
+       sudo journalctl -u nexus.service -n 50 --no-pager
     fi
 
     #Go to Menu
@@ -371,6 +371,10 @@ restart_nexus_node() {
         echo "Failed to restart Nexus node. Checking logs for details..."
         sudo journalctl -u nexus.service -n 50 --no-pager
     fi
+
+    # Go back to main menu
+    echo "Navigating to main menu..."
+    master
 }
 
 
@@ -387,6 +391,7 @@ master() {
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
     print_info "3. Nexus-API"
+    print_info "4. Nexus-ZKVM"
     print_info "4. Nexus-Run"
     print_info "5. Service-Check"
     print_info "6. Logs-Checker"
@@ -398,7 +403,7 @@ master() {
     print_info "==============================="
     print_info ""
     
-    read -p "Enter your choice (1 or 8): " user_choice
+    read -p "Enter your choice (1 or 9): " user_choice
 
     case $user_choice in
         1)
@@ -411,22 +416,25 @@ master() {
             nexus_api
             ;;
         4)
+            nexus_zkvm
+            ;;
+        5)
             nexus_run
             ;;
-        5) 
+        6) 
             check_service_status
             ;;
-        6)
+        7)
             logs
             ;;
-        7)  
+        8)  
             restart_nexus_node
             ;;
-        8)
+        9)
             exit 0  # Exit the script after breaking the loop
             ;;
         *)
-            print_error "Invalid choice. Please enter 1 or 8 : "
+            print_error "Invalid choice. Please enter 1 or 9 : "
             ;;
     esac
 }
