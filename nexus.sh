@@ -160,27 +160,14 @@ EOF
 
 
 
-check_service_status() {
-    echo "<===== Checking Nexus Service Status =====>"
-    sudo systemctl status nexus.service
-
-    # Check if the service is active
-    if systemctl is-active --quiet nexus.service; then
-        echo "Nexus service is running."
-    else
-        echo "Nexus service is not running."
-    fi
-}
-
-
-
 # Function to update Nexus Network API to the latest version
 update_nexus_api() {
     echo "Checking for updates in Nexus Network API..."
-    
+
     # Ensure the Nexus directory exists
-    if [ -d ~/.nexus/network-api ]; then
-        cd ~/.nexus/network-api
+    NEXUS_DIR="$HOME/.nexus/network-api"
+    if [ -d "$NEXUS_DIR" ]; then
+        cd "$NEXUS_DIR" || { echo "Failed to navigate to Nexus Network API directory."; return 1; }
     else
         echo "Error: Nexus Network API directory not found."
         return 1
@@ -198,7 +185,16 @@ update_nexus_api() {
     fi
 
     # Checkout the latest version
-    git checkout $LATEST_TAG || { echo "Failed to checkout to the latest tag ($LATEST_TAG)."; return 1; }
+    git checkout "$LATEST_TAG" || { echo "Failed to checkout to the latest tag ($LATEST_TAG)."; return 1; }
+
+    # Navigate to the cli directory where Cargo.toml is located
+    cd clients/cli || { echo "Error: clients/cli directory not found."; return 1; }
+
+    # Verify that Cargo.toml exists
+    if [ ! -f Cargo.toml ]; then
+        echo "Error: Cargo.toml not found in the Nexus Network API directory."
+        return 1
+    fi
 
     # Clean and rebuild the project with the latest version
     cargo clean
@@ -206,7 +202,6 @@ update_nexus_api() {
 
     echo "Nexus Network API updated to the latest version ($LATEST_TAG)."
 
-    
     # Set up Nexus ZKVM environment
     echo "Setting up Nexus ZKVM environment..."
     setup_nexus_zkvm
