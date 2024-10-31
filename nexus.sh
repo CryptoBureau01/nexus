@@ -288,15 +288,15 @@ manage_nexus_environment() {
 
     # Run the Nexus program
     echo "Running Nexus program..."
-    cargo nexus run || { echo "Failed to run Nexus program."; return 1; }
+    cargo-nexus run || { echo "Failed to run Nexus program."; return 1; }
 
     # Prove the Nexus program
     echo "Proving your program..."
-    cargo nexus prove || { echo "Failed to prove Nexus program."; return 1; }
+    cargo-nexus prove || { echo "Failed to prove Nexus program."; return 1; }
 
     # Verify the proof
     echo "Verifying your proof..."
-    cargo nexus verify || { echo "Failed to verify Nexus proof."; return 1; }
+    cargo-nexus verify || { echo "Failed to verify Nexus proof."; return 1; }
 
     # Fix unused import warning
     echo "Fixing unused import warnings..."
@@ -381,18 +381,19 @@ master() {
     print_info ""
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
-    print_info "3. Node-Run"
-    print_info "4. Service-Check"
-    print_info "5. Logs-Checker"
-    print_info "6. Refresh-Node"
-    print_info "7. Exit"
+    print-info "3. Update-API"
+    print_info "4. Node-Run"
+    print_info "5. Service-Check"
+    print_info "6. Logs-Checker"
+    print_info "7. Refresh-Node"
+    print_info "8. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CB-Master "
     print_info "==============================="
     print_info ""
     
-    read -p "Enter your choice (1 or 7): " user_choice
+    read -p "Enter your choice (1 or 8): " user_choice
 
     case $user_choice in
         1)
@@ -402,22 +403,25 @@ master() {
             nexus_setup
             ;;
         3) 
+            update_nexus_api
+            ;;
+        4)
             manage_nexus_environment
             ;;
-        4) 
+        5) 
             check_service_status
             ;;
-        5)
+        6)
             logs
             ;;
-        6)  
+        7)  
             restart_nexus_node
             ;;
-        7)
+        8)
             exit 0  # Exit the script after breaking the loop
             ;;
         *)
-            print_error "Invalid choice. Please enter 1 or 7 : "
+            print_error "Invalid choice. Please enter 1 or 8 : "
             ;;
     esac
 }
