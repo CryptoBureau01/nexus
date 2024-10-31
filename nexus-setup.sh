@@ -102,11 +102,13 @@ nexus_setup() {
 
     # Clone or update Nexus network API repository
     if [ -d "$NEXUS_HOME/network-api" ]; then
-        echo "$NEXUS_HOME/network-api already exists. Updating..."
-        (cd $NEXUS_HOME/network-api && git pull)
+        echo "$NEXUS_HOME/network-api && nexus.sh already exists. Updating..."
+        (cd $NEXUS_HOME/network-api && git pull && nexus.sh)
     else
         mkdir -p $NEXUS_HOME
         (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
+        # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
+        curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh"
     fi
 
 
@@ -131,7 +133,7 @@ Description=Nexus Process
 After=network.target
 
 [Service]
-ExecStart=/root/nexus.sh  # <==== make sure to change this file location to match where you put the file
+ExecStart=/root/.nexus/nexus.sh  # <==== make sure to change this file location to match where you put the file
 Restart=on-failure
 RestartSec=5
 RestartPreventExitStatus=127
