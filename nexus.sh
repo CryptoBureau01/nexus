@@ -313,12 +313,11 @@ nexus_run() {
     echo "Fixing unused import warnings..."
     sed -i 's/^use std::env;/\/\/ use std::env;/' /root/.nexus/network-api/clients/cli/src/prover.rs || { echo "Failed to fix unused import warning."; return 1; }
 
-    # Stop, disable, and clean up the Nexus service
+    # Start, enable, and reload up the Nexus service
     echo "Stopping and cleaning up Nexus service..."
-    sudo systemctl stop nexus.service
-    sudo systemctl disable nexus.service
-    sudo rm -f /etc/systemd/system/nexus.service
     sudo systemctl daemon-reload
+    sudo systemctl enable nexus.service
+    sudo systemctl start nexus.service
 
     echo "Nexus Run successfully."
 
