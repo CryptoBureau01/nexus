@@ -111,25 +111,17 @@ nexus_setup() {
         (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
     fi
 
-    # Check if the Nexus prover binary already exists
-    if [ -f "$NEXUS_HOME/network-api/clients/cli/target/release/prover" ]; then
-        echo "Nexus Prover is already installed."
-    else
-        echo "Running Nexus Prover installation..."
-
-        # Run the Nexus prover using cargo, with error handling
-        if (cd $NEXUS_HOME/network-api/clients/cli && cargo run --release --bin prover -- beta.orchestrator.nexus.xyz); then
-            echo "Nexus Prover installed and executed successfully."
-        else
-            echo "Failed to run Nexus Prover. Please check for errors in the installation process."
-            exit 1
-        fi
-     fi
-
 
     # Set ownership for Nexus files
     echo "Setting file ownership for Nexus..."
     sudo chown -R root:root /root/.nexus
+
+    sed -i 's|rustc|/root/.cargo/bin/rustc|g' nexus.sh
+    sed -i 's|cargo|/root/.cargo/bin/cargo|g' nexus.sh
+
+    sed -i '5i NONINTERACTIVE=1' nexus.sh
+
+
 
     # Define systemd service file path
     SERVICE_FILE="/etc/systemd/system/nexus.service"
@@ -139,18 +131,17 @@ nexus_setup() {
         echo "Creating systemd service file for Nexus..."
         sudo tee $SERVICE_FILE > /dev/null <<EOF
 [Unit]
-Description=Nexus Network
-Wants=network-online.target
-After=network-online.target
+Description=Nexus Process
+After=network.target
 
 [Service]
-Type=simple
-User=root
-WorkingDirectory=/root/.nexus/network-api/clients/cli
-ExecStart=/root/.cargo/bin/cargo run --release --bin prover -- beta.orchestrator.nexus.xyz
-Restart=always
-RestartSec=11
-LimitNOFILE=65000
+ExecStart=/root/nexus.sh  # <==== make sure to change this file location to match where you put the file
+Restart=on-failure
+RestartSec=5
+RestartPreventExitStatus=127
+SuccessExitStatus=127
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
