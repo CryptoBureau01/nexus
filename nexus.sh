@@ -161,7 +161,7 @@ EOF
 
 
 # Function to update Nexus Network API to the latest version
-update_nexus_api() {
+nexus_api() {
     echo "Checking for updates in Nexus Network API..."
 
     # Ensure the Nexus directory exists
@@ -196,9 +196,15 @@ update_nexus_api() {
         return 1
     fi
 
-    # Clean and rebuild the project with the latest version
-    cargo clean
-    cargo build --release || { echo "Build failed. Please check the error logs."; return 1; }
+    # Check if the project has already been built
+    if [ -d target/release ]; then
+        echo "Nexus Network API has already been built. Skipping build step."
+    else
+        # Clean and rebuild the project with the latest version
+        cargo clean
+        cargo build --release || { echo "Build failed. Please check the error logs."; return 1; }
+        echo "Nexus Network API built successfully."
+    fi
 
     echo "Nexus Network API updated to the latest version ($LATEST_TAG)."
 
@@ -210,6 +216,7 @@ update_nexus_api() {
     echo "Navigating to main menu..."
     master
 }
+
 
 
 
@@ -376,7 +383,7 @@ master() {
     print_info ""
     print_info "1. Install-Dependency"
     print_info "2. Setup-Nexus"
-    print_info "3. Update-API"
+    print_info "3. Nexus-API"
     print_info "4. Node-Run"
     print_info "5. Service-Check"
     print_info "6. Logs-Checker"
@@ -398,7 +405,7 @@ master() {
             nexus_setup
             ;;
         3) 
-            update_nexus_api
+            nexus_api
             ;;
         4)
             manage_nexus_environment
