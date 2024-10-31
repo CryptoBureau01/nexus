@@ -102,38 +102,38 @@ nexus_setup() {
 
     # Clone or update Nexus network API repository
     if [ -d "$NEXUS_HOME/network-api" ]; then
-        echo "$NEXUS_HOME/network-api && nexus.sh already exists. Updating..."
-        (cd $NEXUS_HOME/network-api && git pull && nexus.sh)
+        echo "$NEXUS_HOME/network-api already exists. Updating..."
+        (cd $NEXUS_HOME/network-api && git pull)
     else
         mkdir -p $NEXUS_HOME
         (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
-        # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
-        curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh && sh "$NEXUS_HOME/nexus.sh""
     fi
 
+    # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
+    curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh" && sh "$NEXUS_HOME/nexus.sh"
 
     # Set ownership for Nexus files
     echo "Setting file ownership for Nexus..."
-    sudo chown -R root:root /root/.nexus
+    sudo chown -R root:root "$NEXUS_HOME"
 
-    sed -i 's|rustc|/root/.cargo/bin/rustc|g' nexus.sh
-    sed -i 's|cargo|/root/.cargo/bin/cargo|g' nexus.sh
-
-    sed -i '5i NONINTERACTIVE=1' nexus.sh
+    # Update nexus.sh for absolute paths and non-interactive installation
+    sed -i 's|rustc|/root/.cargo/bin/rustc|g' "$NEXUS_HOME/nexus.sh"
+    sed -i 's|cargo|/root/.cargo/bin/cargo|g' "$NEXUS_HOME/nexus.sh"
+    sed -i '5i NONINTERACTIVE=1' "$NEXUS_HOME/nexus.sh"
 
     # Define systemd service file path
     SERVICE_FILE="/etc/systemd/system/nexus.service"
-    
+
     # Create systemd service file if it doesn't exist
     if [ ! -f "$SERVICE_FILE" ]; then
         echo "Creating systemd service file for Nexus..."
-        sudo tee $SERVICE_FILE > /dev/null <<EOF
+        sudo tee "$SERVICE_FILE" > /dev/null <<EOF
 [Unit]
 Description=Nexus Process
 After=network.target
 
 [Service]
-ExecStart=/root/.nexus/nexus.sh  # <==== make sure to change this file location to match where you put the file
+ExecStart=$NEXUS_HOME/nexus.sh  # Ensure this path is correct
 Restart=on-failure
 RestartSec=5
 RestartPreventExitStatus=127
@@ -160,6 +160,7 @@ EOF
     echo "Navigating to main menu..."
     master
 }
+
 
 
 
