@@ -217,11 +217,11 @@ nexus_api() {
 
 
 nexus_zkvm() {
-    PROJECT_DIR="nexus-project"
-    
+    PROJECT_DIR="$HOME/.nexus/nexus-project"  # Define the full path to the project directory
+
     # Check if the Nexus ZKVM project already exists
     if [ -d "$PROJECT_DIR" ]; then
-        echo "Nexus ZKVM API already exists."
+        echo "Nexus ZKVM project already exists."
         # Go back to main menu
         echo "Navigating to main menu..."
         master
@@ -289,6 +289,7 @@ nexus_zkvm() {
     echo "Navigating to main menu..."
     master
 }
+
 
 
 
