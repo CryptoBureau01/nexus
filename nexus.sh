@@ -50,7 +50,7 @@ master_fun() {
 }
 
 
-
+# Function to dependency install the Nexus node
 install_dependency() {
     echo "Updating packages..."
     sudo apt update && sudo apt upgrade -y
@@ -75,12 +75,13 @@ install_dependency() {
         exit 1
     fi
 
-    #Go to Menu
+    # Redirect back to the main menu
+    echo "Navigating to main menu..."
     master
 }
 
 
-
+# Function to file setup the Nexus node
 nexus_setup() {
     echo "<===== Installing Nexus Prover =====>"
 
@@ -215,7 +216,7 @@ nexus_api() {
 
 
 
-
+# Function to zkvm the Nexus node
 nexus_zkvm() {
     PROJECT_DIR="$HOME/.nexus/nexus-project"  # Define the full path to the project directory
 
@@ -292,12 +293,7 @@ nexus_zkvm() {
 
 
 
-
-
-
-
-
-
+# Function to run and setup the Nexus node
 nexus_run() {
     echo "Starting Nexus program, proof, and verification sequence..."
 
@@ -326,13 +322,34 @@ nexus_run() {
 
     echo "Nexus Run successfully."
 
-    #Go to Menu
+    # Redirect back to the main menu
+    echo "Navigating to main menu..."
+    master
+}
+
+
+
+# Function to service status the Nexus node
+check_service_status() {
+    echo "<===== Checking Nexus Service Status =====>"
+    sudo systemctl status nexus.service
+
+    # Check if the service is active
+    if systemctl is-active --quiet nexus.service; then
+        echo "Nexus service is running."
+    else
+        echo "Nexus service is not running."
+    fi
+
+    # Redirect back to the main menu
+    echo "Navigating to main menu..."
     master
 }
 
 
 
 
+# Function to logs the Nexus node
 logs() {
     if ! systemctl is-active --quiet nexus.service; then
         echo "Nexus service is not running. Attempting to start..."
@@ -350,12 +367,10 @@ logs() {
        sudo journalctl -u nexus.service -n 50 --no-pager
     fi
 
-    #Go to Menu
+    # Redirect back to the main menu
+    echo "Navigating to main menu..."
     master
 }
-
-
-
 
 
 # Function to restart the Nexus node
