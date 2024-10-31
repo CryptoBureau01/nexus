@@ -111,6 +111,7 @@ nexus_setup() {
 
     # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
     curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh"
+    chmod +x /root/.nexus/nexus.sh
 
     # Set ownership for Nexus files
     echo "Setting file ownership for Nexus..."
