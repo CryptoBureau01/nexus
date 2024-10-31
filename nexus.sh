@@ -217,6 +217,14 @@ nexus_api() {
 
 
 nexus_zkvm() {
+    PROJECT_DIR="nexus-project"
+    
+    # Check if the Nexus ZKVM project already exists
+    if [ -d "$PROJECT_DIR" ]; then
+        echo "Nexus ZKVM project already exists. Please remove the existing project or use the existing setup."
+        return 1
+    fi
+
     echo "Setting up Nexus ZKVM environment..."
 
     # Add the target for RISC-V architecture
@@ -236,7 +244,7 @@ nexus_zkvm() {
     fi
 
     # Create Nexus ZKVM project
-    if cargo nexus new nexus-project; then
+    if cargo nexus new "$PROJECT_DIR"; then
         echo "Nexus ZKVM project created successfully."
     else
         echo "Failed to create Nexus ZKVM project."
@@ -244,7 +252,7 @@ nexus_zkvm() {
     fi
 
     # Navigate to the project src directory
-    cd nexus-project/src || { echo "Failed to navigate to project src directory."; return 1; }
+    cd "$PROJECT_DIR/src" || { echo "Failed to navigate to project src directory."; return 1; }
 
     # Remove the default main.rs if it exists
     rm -f main.rs
@@ -278,6 +286,7 @@ nexus_zkvm() {
     echo "Navigating to main menu..."
     master
 }
+
 
 
 
@@ -392,11 +401,11 @@ master() {
     print_info "2. Setup-Nexus"
     print_info "3. Nexus-API"
     print_info "4. Nexus-ZKVM"
-    print_info "4. Nexus-Run"
-    print_info "5. Service-Check"
-    print_info "6. Logs-Checker"
-    print_info "7. Refresh-Node"
-    print_info "8. Exit"
+    print_info "5. Nexus-Run"
+    print_info "6. Service-Check"
+    print_info "7. Logs-Checker"
+    print_info "8. Refresh-Node"
+    print_info "9. Exit"
     print_info ""
     print_info "==============================="
     print_info " Created By : CB-Master "
