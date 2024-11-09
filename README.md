@@ -23,7 +23,7 @@ To install the necessary tools for managing your Nexus node, run the following c
 
 ```bash
 
-cd $HOME && wget https://raw.githubusercontent.com/CryptoBureau01/nexus/main/nexus-setup.sh && chmod +x nexus-setup.sh && ./nexus-setup.sh
+cd $HOME && wget https://raw.githubusercontent.com/CryptoBureau01/nexus/main/nexus.sh && chmod +x nexus.sh && ./nexus.sh
 ```
 
 _____________________________________________________________________________________________________________
