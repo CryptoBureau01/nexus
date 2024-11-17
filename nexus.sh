@@ -109,6 +109,7 @@ nexus_setup() {
         (cd $NEXUS_HOME && git clone https://github.com/nexus-xyz/network-api)
     fi
 
+    sleep 1
     # Download the script into the NEXUS_HOME directory as nexus.sh and execute it
     curl -s https://cli.nexus.xyz/ -o "$NEXUS_HOME/nexus.sh"
     chmod +x /root/.nexus/nexus.sh
@@ -117,11 +118,13 @@ nexus_setup() {
     echo "Setting file ownership for Nexus..."
     sudo chown -R root:root "$NEXUS_HOME"
 
+    sleep 1
     # Update nexus.sh for absolute paths and non-interactive installation
     sed -i 's|rustc|/root/.cargo/bin/rustc|g' "$NEXUS_HOME/nexus.sh"
     sed -i 's|cargo|/root/.cargo/bin/cargo|g' "$NEXUS_HOME/nexus.sh"
     sed -i '5i NONINTERACTIVE=1' "$NEXUS_HOME/nexus.sh"
 
+    sleep 1
     # Define systemd service file path
     SERVICE_FILE="/etc/systemd/system/nexus.service"
 
@@ -149,6 +152,7 @@ EOF
         echo "Service file already exists. Skipping creation."
     fi
 
+    sleep 1
     # Reload systemd daemon, enable, and start Nexus service
     echo "Reloading systemd daemon and enabling Nexus service..."
     sudo systemctl daemon-reload
@@ -178,6 +182,7 @@ nexus_api() {
         return 1
     fi
 
+     sleep 1
     # Fetch all updates from the repository
     git fetch --all --tags || { echo "Failed to fetch updates. Please check your network connection."; return 1; }
 
@@ -195,12 +200,14 @@ nexus_api() {
     # Navigate to the cli directory where Cargo.toml is located
     cd clients/cli || { echo "Error: clients/cli directory not found."; return 1; }
 
+    sleep 1
     # Verify that Cargo.toml exists
     if [ ! -f Cargo.toml ]; then
         echo "Error: Cargo.toml not found in the Nexus Network API directory."
         return 1
     fi
 
+    sleep 1
     # Check if the project has already been built
     if [ -d target/release ]; then
         echo "Nexus Network API has already been built. Skipping build step."
@@ -243,6 +250,7 @@ nexus_zkvm() {
         return 1
     fi
 
+    sleep 1
     # Install Nexus tools from the Nexus repository
     if cargo install --git https://github.com/nexus-xyz/nexus-zkvm cargo-nexus --tag 'v0.2.3'; then
         echo "Nexus tools installed successfully."
@@ -251,6 +259,7 @@ nexus_zkvm() {
         return 1
     fi
 
+    sleep 1
     # Create Nexus ZKVM project
     if cargo nexus new "$PROJECT_DIR"; then
         echo "Nexus ZKVM project created successfully."
