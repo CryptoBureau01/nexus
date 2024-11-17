@@ -197,9 +197,14 @@ nexus_api() {
     # Checkout the latest version
     git checkout "$LATEST_TAG" || { echo "Failed to checkout to the latest tag ($LATEST_TAG)."; return 1; }
 
-    # Navigate to the cli directory where Cargo.toml is located
-    cd clients/cli || { echo "Error: clients/cli directory not found."; return 1; }
-
+    X1_DIR="$HOME/.nexus/network-api/clients/cli"
+    if [ -d "$X1_DIR" ]; then
+        cd "$X1_DIR" || { echo "Failed to navigate to Nexus Network Cli-Cargo directory."; return 1; }
+    else
+        echo "Error: Nexus Network Cli-Cargo directory not found."
+        return 1
+    fi
+    
     sleep 1
     # Verify that Cargo.toml exists
     if [ ! -f Cargo.toml ]; then
