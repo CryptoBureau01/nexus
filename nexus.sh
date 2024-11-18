@@ -89,7 +89,7 @@ nexus_setup() {
     if ! command -v rustc &> /dev/null; then
         echo "Rust is not installed. Installing Rust..."
         curl -sSf https://sh.rustup.rs | sh -s -- -y
-        source $HOME/.cargo/env
+        source /root/.cargo/env
     fi
 
     NEXUS_HOME=/root/.nexus
@@ -174,7 +174,7 @@ nexus_api() {
     echo "Checking for updates in Nexus Network API..."
 
     # Ensure the Nexus directory exists
-    NEXUS_DIR="$HOME/.nexus/network-api"
+    NEXUS_DIR="/root/.nexus/network-api"
     if [ -d "$NEXUS_DIR" ]; then
         cd "$NEXUS_DIR" || { echo "Failed to navigate to Nexus Network API directory."; return 1; }
     else
@@ -197,7 +197,7 @@ nexus_api() {
     # Checkout the latest version
     git checkout "$LATEST_TAG" || { echo "Failed to checkout to the latest tag ($LATEST_TAG)."; return 1; }
 
-    X1_DIR="$HOME/.nexus/network-api/clients/cli"
+    X1_DIR="/root/.nexus/network-api/clients/cli"
     if [ -d "$X1_DIR" ]; then
         cd "$X1_DIR" || { echo "Failed to navigate to Nexus Network Cli-Cargo directory."; return 1; }
     else
@@ -234,7 +234,7 @@ nexus_api() {
 
 # Function to zkvm the Nexus node
 nexus_zkvm() {
-    PROJECT_DIR="$HOME/.nexus/nexus-project"  # Define the full path to the project directory
+    PROJECT_DIR="/root/.nexus/nexus-project"  # Define the full path to the project directory
 
     # Check if the Nexus ZKVM project already exists
     if [ -d "$PROJECT_DIR" ]; then
